@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 
+import com.example.social.adapters.AdapterUsers;
+import com.example.social.models.ModelUsers;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;

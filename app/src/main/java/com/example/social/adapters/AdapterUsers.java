@@ -1,6 +1,7 @@
-package com.example.social;
+package com.example.social.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.social.ChatActivity;
+import com.example.social.models.ModelUsers;
+import com.example.social.R;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -39,6 +43,7 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder>{
     @Override
     public void onBindViewHolder(@NonNull MyHolder myHolder, int i) {
 
+        final String hisUID = usersList.get(i).getUid();
         String userImage = usersList.get(i).getImage();
         String userName = usersList.get(i).getName();
         final String userEmail = usersList.get(i).getEmail();
@@ -61,7 +66,11 @@ public class AdapterUsers extends RecyclerView.Adapter<AdapterUsers.MyHolder>{
         myHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(context, ""+userEmail, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(context, ChatActivity.class);
+                intent.putExtra("hisUid", hisUID);
+                context.startActivity(intent);
+
             }
         });
 
