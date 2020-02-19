@@ -10,7 +10,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -28,12 +27,15 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -204,7 +206,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                             finish();
 
                         } else {
@@ -264,8 +266,25 @@ public class LoginActivity extends AppCompatActivity {
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            String email = user.getEmail();
+                            String uid = user.getUid();
+
+                            HashMap<Object, String> hashMap = new HashMap<>();
+
+                            hashMap.put("email", email);
+                            hashMap.put("uid", uid);
+                            hashMap.put("name", "");
+                            hashMap.put("phone", "");
+                            hashMap.put("image", "");
+
+                            FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+                            DatabaseReference reference = database.getReference("Users");
+
+                            reference.child(uid).setValue(hashMap);
+
                             Toast.makeText(LoginActivity.this, ""+user.getEmail(), Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(LoginActivity.this, ProfileActivity.class));
+                            startActivity(new Intent(LoginActivity.this, DashboardActivity.class));
                             finish();
 //                            updateUI(user);
                         } else {
