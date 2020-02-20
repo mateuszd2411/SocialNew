@@ -3,6 +3,7 @@ package com.example.social;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.social.adapters.AdapterChat;
+import com.example.social.models.ModelChat;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,7 +30,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class ChatActivity extends AppCompatActivity {
 
@@ -43,9 +48,17 @@ public class ChatActivity extends AppCompatActivity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference usersDbRef;
 
+    ValueEventListener seenListener;
+    DatabaseReference userRefForSeen;
+
+    List<ModelChat> chatList;
+    AdapterChat adapterChat;
+
 
     String hisUid;
     String myUid;
+    String hisImage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +75,14 @@ public class ChatActivity extends AppCompatActivity {
         userStatusTv = findViewById(R.id.userStatusTv);
         messageEt = findViewById(R.id.messageEt);
         sendBtn = findViewById(R.id.sendBtn);
+
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        linearLayoutManager.setStackFromEnd(true);
+
+        recyclerView.setHasFixedSize(true);
+        recyclerView.setLayoutManager(linearLayoutManager);
+
 
         Intent intent = getIntent();
         hisUid = intent.getStringExtra("hisUid");
@@ -81,13 +102,13 @@ public class ChatActivity extends AppCompatActivity {
                 for (DataSnapshot ds: dataSnapshot.getChildren()){
 
                     String name = ""+ ds.child("name").getValue();
-                    String image = ""+ ds.child("image").getValue();
+                    hisImage = ""+ ds.child("image").getValue();
 
 
                     nameTv.setText(name);
                     try {
 
-                        Picasso.get().load(image).placeholder(R.drawable.ic_default_img_white).into(profileIv);
+                        Picasso.get().load(hisImage).placeholder(R.drawable.ic_default_img_white).into(profileIv);
 
                     }
                     catch (Exception e){
@@ -128,6 +149,65 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
+        readMessages();
+
+        seendMessage();
+
+    }
+
+    private void seendMessage() {
+
+        userRefForSeen = FirebaseDatabase.getInstance().getReference("Chats");
+        seenListener = userRefForSeen.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    ModelChat chat = ds.getValue(ModelChat.class);
+                    if (chat.getReceiver().equals(myUid) && chat.getSender().equals(hisUid)){
+                        HashMap<String, Object> hasSeenHashMap = new HashMap<>();
+                        hasSeenHashMap.put("isSeen", true);
+                        ds.getRef().updateChildren(hasSeenHashMap);
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    private void readMessages() {
+
+        chatList = new ArrayList<>();
+        DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("Chats");
+        dbRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                chatList.clear();
+                for (DataSnapshot ds: dataSnapshot.getChildren()){
+                    ModelChat chat = ds.getValue(ModelChat.class);
+                    if (chat.getReceiver().equals(myUid) && chat.getSender().equals(hisUid) ||
+                            chat.getReceiver().equals(hisUid) && chat.getSender().equals(myUid)){
+                        chatList.add(chat);
+                    }
+
+                    adapterChat = new AdapterChat(ChatActivity.this, chatList, hisImage);
+                    adapterChat.notifyDataSetChanged();
+
+                    recyclerView.setAdapter(adapterChat);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 
@@ -137,10 +217,15 @@ public class ChatActivity extends AppCompatActivity {
         DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
 
+
+        String timestamp = String.valueOf(System.currentTimeMillis());
+
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", myUid);
         hashMap.put("receiver", hisUid);
         hashMap.put("message", message);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("isSeen", false);
         databaseReference.child("Chats").push().setValue(hashMap);
 
         messageEt.setText("");
@@ -170,6 +255,13 @@ public class ChatActivity extends AppCompatActivity {
         checkUserStatus();
 
         super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        userRefForSeen.removeEventListener(seenListener);
     }
 
     @Override
