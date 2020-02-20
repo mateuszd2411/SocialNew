@@ -1,13 +1,13 @@
 package com.example.social.models;
 
-public class ModelUsers {
+public class ModelUser {
 
     String name, email, search, phone, image, cover, uid;
 
-    public ModelUsers() {
+    public ModelUser() {
     }
 
-    public ModelUsers(String name, String email, String search, String phone, String image, String cover, String uid) {
+    public ModelUser(String name, String email, String search, String phone, String image, String cover, String uid) {
         this.name = name;
         this.email = email;
         this.search = search;

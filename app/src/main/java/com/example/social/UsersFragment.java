@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 
 import com.example.social.adapters.AdapterUsers;
-import com.example.social.models.ModelUsers;
+import com.example.social.models.ModelUser;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +44,7 @@ public class UsersFragment extends Fragment {
 
     RecyclerView recyclerView;
     AdapterUsers adapterUsers;
-    List<ModelUsers> usersList;
+    List<ModelUser> usersList;
 
     FirebaseAuth firebaseAuth;
 
@@ -87,10 +87,10 @@ public class UsersFragment extends Fragment {
                 usersList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
 
-                    ModelUsers modelUsers = ds.getValue(ModelUsers.class);
+                    ModelUser modelUser = ds.getValue(ModelUser.class);
 
-                    if (!modelUsers.getUid().equals(fUser.getUid())){
-                        usersList.add(modelUsers);
+                    if (!modelUser.getUid().equals(fUser.getUid())){
+                        usersList.add(modelUser);
                     }
 
 
@@ -123,15 +123,15 @@ public class UsersFragment extends Fragment {
                 usersList.clear();
                 for (DataSnapshot ds : dataSnapshot.getChildren()){
 
-                    ModelUsers modelUsers = ds.getValue(ModelUsers.class);
+                    ModelUser modelUser = ds.getValue(ModelUser.class);
 
-                    if (!modelUsers.getUid().equals(fUser.getUid())){
+                    if (!modelUser.getUid().equals(fUser.getUid())){
 
 
-                        if (modelUsers.getName().toLowerCase().contains(query.toLowerCase()) ||
-                                modelUsers.getEmail().toLowerCase().contains(query.toLowerCase())){
+                        if (modelUser.getName().toLowerCase().contains(query.toLowerCase()) ||
+                                modelUser.getEmail().toLowerCase().contains(query.toLowerCase())){
 
-                            usersList.add(modelUsers);
+                            usersList.add(modelUser);
 
                         }
 
