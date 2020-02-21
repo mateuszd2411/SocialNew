@@ -1,6 +1,7 @@
 package com.example.social.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -15,6 +17,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.social.R;
+import com.example.social.ThereProfileActivity;
 import com.example.social.models.ModelPost;
 import com.squareup.picasso.Picasso;
 
@@ -47,7 +50,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
     public void onBindViewHolder(@NonNull MyHolder myHolder, int i) {
 
 
-        String uid = postList.get(i).getUid();
+        final String uid = postList.get(i).getUid();
         String uEmail = postList.get(i).getuEmail();
         String uName = postList.get(i).getuName();
         String uDp = postList.get(i).getuDp();
@@ -135,6 +138,18 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         });
 
 
+        myHolder.prolileLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent(context, ThereProfileActivity.class);
+                intent.putExtra("uid", uid);
+                context.startActivity(intent);
+
+
+            }
+        });
+
 
     }
 
@@ -149,6 +164,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         TextView uNameTv, pTimeTv, pTitleTv, pDescriptionTv, pLikesTv;
         ImageButton moreBtn;
         Button likeBtn, commentBtn, shareBtn;
+        LinearLayout prolileLayout;
 
 
         public MyHolder(@NonNull View itemView) {
@@ -166,6 +182,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             likeBtn = itemView.findViewById(R.id.likeBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
             shareBtn = itemView.findViewById(R.id.shareBtn);
+            prolileLayout = itemView.findViewById(R.id.profileLayout);
 
 
         }
