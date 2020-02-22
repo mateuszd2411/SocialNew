@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.social.AddPostActivity;
 import com.example.social.R;
 import com.example.social.ThereProfileActivity;
 import com.example.social.models.ModelPost;
@@ -185,6 +186,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         if (uid.equals(myUid)){
 
             popupMenu.getMenu().add(Menu.NONE, 0,0,"Delete");
+            popupMenu.getMenu().add(Menu.NONE, 1,0,"Edit");
         }
 
 
@@ -197,6 +199,14 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                 if (id==0){
 
                     beginDelete(pId, pImage);
+
+                }
+                else if (id==1){
+
+                    Intent intent = new Intent(context, AddPostActivity.class);
+                    intent.putExtra("key", "editPost");
+                    intent.putExtra("editPostId", pId);
+                    context.startActivity(intent);
 
                 }
 
