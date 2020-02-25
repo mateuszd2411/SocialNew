@@ -24,6 +24,7 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.social.AddPostActivity;
+import com.example.social.PostDetailActivity;
 import com.example.social.R;
 import com.example.social.ThereProfileActivity;
 import com.example.social.models.ModelPost;
@@ -90,6 +91,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         final String pImage = postList.get(i).getpImage();
         String pTimeStamp = postList.get(i).getpTime();
         String pLikes = postList.get(i).getpLikes();
+        String pComments = postList.get(i).getpComments();
 
 
         Calendar calendar = Calendar.getInstance(Locale.getDefault());
@@ -102,6 +104,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
         myHolder.pTitleTv.setText(pTitle);
         myHolder.pDescriptionTv.setText(pDescription);
         myHolder.pLikesTv.setText(pLikes + " Likes");
+        myHolder.pCommentsTv.setText(pComments + " Comments");
 
         setLikes(myHolder, pId);
 
@@ -192,8 +195,11 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             @Override
             public void onClick(View v) {
 
+                Intent intent = new Intent(context, PostDetailActivity.class);
+                intent.putExtra("postId", pId);
+                context.startActivity(intent);
 
-                Toast.makeText(context, "Comment", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -266,6 +272,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             popupMenu.getMenu().add(Menu.NONE, 0,0,"Delete");
             popupMenu.getMenu().add(Menu.NONE, 1,0,"Edit");
         }
+        popupMenu.getMenu().add(Menu.NONE, 2,0,"View Detail");
 
 
 
@@ -286,6 +293,12 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
                     intent.putExtra("editPostId", pId);
                     context.startActivity(intent);
 
+                }
+                else if (id==2){
+
+                    Intent intent = new Intent(context, PostDetailActivity.class);
+                    intent.putExtra("postId", pId);
+                    context.startActivity(intent);
                 }
 
                 return false;
@@ -389,7 +402,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
     class MyHolder extends RecyclerView.ViewHolder{
 
         ImageView uPictureIv, pImageIv;
-        TextView uNameTv, pTimeTv, pTitleTv, pDescriptionTv, pLikesTv;
+        TextView uNameTv, pTimeTv, pTitleTv, pDescriptionTv, pLikesTv, pCommentsTv;
         ImageButton moreBtn;
         Button likeBtn, commentBtn, shareBtn;
         LinearLayout prolileLayout;
@@ -406,6 +419,7 @@ public class AdapterPosts extends RecyclerView.Adapter<AdapterPosts.MyHolder> {
             pTitleTv = itemView.findViewById(R.id.pTitleTv);
             pDescriptionTv = itemView.findViewById(R.id.pDescriptionTv);
             pLikesTv = itemView.findViewById(R.id.pLikesTv);
+            pCommentsTv = itemView.findViewById(R.id.pCommentsTv);
             moreBtn = itemView.findViewById(R.id.moreBtn);
             likeBtn = itemView.findViewById(R.id.likeBtn);
             commentBtn = itemView.findViewById(R.id.commentBtn);
