@@ -182,6 +182,31 @@ public class PostDetailActivity extends AppCompatActivity {
 
     }
 
+    private void addToHisNotifications(String hisUid, String pId, String notification){
+        String timestamp = ""+System.currentTimeMillis();
+
+        HashMap<Object, String> hashMap = new HashMap<>();
+        hashMap.put("pId", pId);
+        hashMap.put("timestamp", timestamp);
+        hashMap.put("pUid", hisUid);
+        hashMap.put("notification", notification);
+        hashMap.put("sUid", myUid);
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference("Users");
+        ref.child(hisUid).child("Notifications").child(timestamp).setValue(hashMap)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+    }
+
 
     private void shareTextOnly(String pTitle, String pDescription) {
 
@@ -460,6 +485,8 @@ public class PostDetailActivity extends AppCompatActivity {
                         likesRef.child(postId).child(myUid).setValue("Liked");
                         mProcessLike = false;
 
+                        addToHisNotifications(""+hisUid, ""+postId, " Liked your post");
+
 
                     }
 
@@ -480,9 +507,6 @@ public class PostDetailActivity extends AppCompatActivity {
         pd.dismiss();
         pd.setMessage("Adding comment...");
 
-//        if (pd != null && pd.isShowing()) {
-//            pd.dismiss();
-//        }
 
         String comment = commentEt.getText().toString().trim();
 
@@ -514,12 +538,11 @@ public class PostDetailActivity extends AppCompatActivity {
 
                         pd.dismiss();
 
-//                        if (pd != null && pd.isShowing()) {
-//                            pd.dismiss();
-//                        }
                         Toast.makeText(PostDetailActivity.this, "Comment Added...", Toast.LENGTH_SHORT).show();
                         commentEt.setText("");
                         updateComentCount();
+
+                        addToHisNotifications(""+hisUid, ""+postId, " Comment your post");
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
